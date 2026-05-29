@@ -188,15 +188,26 @@ func (c *Client) Fetch(ticker string, sinceYear int) ([]FinancialRow, error) {
 		return nil, fmt.Errorf("%s facts: %w", ticker, err)
 	}
 
+	// Pick the revenue concept with the MOST in-range periods, not just the first
+	// non-empty one: some filers (e.g. NVDA) carry old data under one tag
+	// (RevenueFromContract…) but report recent revenue under another (Revenues), so
+	// "first non-empty" can select a tag whose points are all filtered out by sinceYear.
 	var revenue map[string]point
+	best := 0
 	for _, concept := range revenueConcepts {
-		if m := conceptPoints(gaap, concept); len(m) > 0 {
-			revenue = m
-			break
+		m := conceptPoints(gaap, concept)
+		cnt := 0
+		for _, p := range m {
+			if yearOf(p.end) >= sinceYear {
+				cnt++
+			}
+		}
+		if cnt > best {
+			best, revenue = cnt, m
 		}
 	}
 	if len(revenue) == 0 {
-		return nil, fmt.Errorf("%s: no revenue concept found in facts", ticker)
+		return nil, fmt.Errorf("%s: no revenue concept with recent data in facts", ticker)
 	}
 	netIncome := conceptPoints(gaap, "NetIncomeLoss")
 	eps := conceptPoints(gaap, "EarningsPerShareDiluted")

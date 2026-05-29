@@ -103,7 +103,7 @@ RAG indexing sub-flow (one-time, `search_docs` setup):
 - [x] **M2 — Data layer + SQL tool.** ✅
       **Real data from SEC EDGAR** (keyless): `cmd/fetch` (maintainer) pulls revenue/net-income/EPS via the
       *companyfacts* API → commits `data/seed.csv` + `data/schema.sql`; `cmd/seed` (anyone, offline) builds
-      `data/research.db`. **52 real rows** — AAPL/MSFT/NVDA/TSLA × 13 periods (`financials` table; prices are
+      `data/research.db`. **53 real rows** — AAPL/MSFT/TSLA × 13 + NVDA × 14 (`financials` table; prices are
       the mock `price` tool in M4). `internal/store` = pluggable **Store interface** (SQLite read-only via
       `?mode=ro` + SELECT-only/single-statement guard; `SchemaText()` for the prompt) — live Postgres impl
       can be added later. `internal/tools/sql.go` = `query_db(sql)` → markdown, returns correctable error text.
@@ -111,7 +111,8 @@ RAG indexing sub-flow (one-time, `search_docs` setup):
       *Verified:* 52 rows; guard rejects `DELETE` ("only SELECT/WITH") and `SELECT 1; DROP` ("single statement");
       real numbers cross-checked (AAPL FY rev 383B/391B/416B; TSLA margins ~9%→2-5%; NVDA ~52%).
       *EDGAR gotchas fixed:* `fy`/`fp` tag the *filing's* year → derive period from END-date+duration; quarterly vs
-      YTD vs annual mixed → bucket by day-count; **companyconcept returns 0 for NVDA → use companyfacts** (1 call/co).
+      YTD vs annual mixed → bucket by day-count; use companyfacts (1 call/co); **NVDA reports recent revenue under
+      `Revenues`, not `RevenueFromContract…` → pick the revenue tag with the MOST in-range periods, not the first non-empty**.
 - [ ] **M3 — RAG `search_docs` tool (Ollama embeddings).**
       `internal/llm/ollama.go` `Embedder`; ingest: chunk corpus → embed → store vectors (BLOB) in SQLite;
       query: embed query → cosine top-k in Go; `tools/search.go` returns top-k chunks + source ids.
