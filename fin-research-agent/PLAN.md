@@ -93,7 +93,7 @@ RAG indexing sub-flow (one-time, `search_docs` setup):
 
 ## Milestone plan (Go — build step-by-step)
 
-- [x] **M1 — Scaffold + safety + LLM backend.** ✅ commit `9f3c30e`
+- [x] **M1 — Scaffold + safety + LLM backend.** ✅ commit `c0faa65`
       Go module + `config/` `.env` loader; `internal/llm/gemini.go` (CLI wrapper, `--skip-trust` for headless,
       stdin for large prompts, JSON token/latency parse); `internal/trace` tracer (trace-first); `main.go`;
       gitleaks pre-commit hook via `core.hooksPath .githooks/`; `.gitignore` for Go/db.
