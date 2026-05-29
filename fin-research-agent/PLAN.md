@@ -100,10 +100,18 @@ RAG indexing sub-flow (one-time, `search_docs` setup):
       *Verified:* real CLI call (in=5659 out=31, 1910ms); gitleaks hook blocks a format-valid GitHub PAT; `.env` untracked.
       *Empirical:* CLI injects **~5.7K scaffolding tokens/call** (one-sentence Q → 5659 input tokens) — confirms the "CLI pollutes token measurement" caveat.
       *Gotchas fixed:* CLI needs `--skip-trust` to run headless; hook uses `gitleaks git --staged` (documented pre-commit cmd; `protect` is undocumented in 8.30.1). Token field is `input` (parses fine).
-- [ ] **M2 — Data layer + SQL tool.**
-      `data/seed.go` builds the SQLite DB (`financials`, `prices`; 3 tickers × 8 quarters);
-      `db/sqlite.go` read-only conn + SELECT-only guard; `db/schema.go` schema-as-text;
-      `tools/sql.go` `query_db(sql)` → validate + run + rows as markdown; **self-correct** on SQL error.
+- [x] **M2 — Data layer + SQL tool.** ✅
+      **Real data from SEC EDGAR** (keyless): `cmd/fetch` (maintainer) pulls revenue/net-income/EPS via the
+      *companyfacts* API → commits `data/seed.csv` + `data/schema.sql`; `cmd/seed` (anyone, offline) builds
+      `data/research.db`. **52 real rows** — AAPL/MSFT/NVDA/TSLA × 13 periods (`financials` table; prices are
+      the mock `price` tool in M4). `internal/store` = pluggable **Store interface** (SQLite read-only via
+      `?mode=ro` + SELECT-only/single-statement guard; `SchemaText()` for the prompt) — live Postgres impl
+      can be added later. `internal/tools/sql.go` = `query_db(sql)` → markdown, returns correctable error text.
+      `cmd/query` = debug harness.
+      *Verified:* 52 rows; guard rejects `DELETE` ("only SELECT/WITH") and `SELECT 1; DROP` ("single statement");
+      real numbers cross-checked (AAPL FY rev 383B/391B/416B; TSLA margins ~9%→2-5%; NVDA ~52%).
+      *EDGAR gotchas fixed:* `fy`/`fp` tag the *filing's* year → derive period from END-date+duration; quarterly vs
+      YTD vs annual mixed → bucket by day-count; **companyconcept returns 0 for NVDA → use companyfacts** (1 call/co).
 - [ ] **M3 — RAG `search_docs` tool (Ollama embeddings).**
       `internal/llm/ollama.go` `Embedder`; ingest: chunk corpus → embed → store vectors (BLOB) in SQLite;
       query: embed query → cosine top-k in Go; `tools/search.go` returns top-k chunks + source ids.
