@@ -1,0 +1,13 @@
+Market & Sector News — Fall 2026 (synthetic data for demo)
+
+The Federal Reserve held interest rates steady at its September meeting, signaling one
+possible cut before year end. Technology stocks rallied on the news, with semiconductor
+names leading gains.
+
+Analysts remain divided on the AI infrastructure trade. Bulls point to record data-center
+capital spending from hyperscalers; bears warn of a potential digestion period in 2027 if
+enterprise adoption of AI applications lags the buildout of compute.
+
+In the EV sector, intensifying price competition in China continued to pressure margins
+across the industry. Several legacy automakers announced delays to their EV roadmaps,
+citing softer-than-expected consumer demand and high battery costs.

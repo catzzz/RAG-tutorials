@@ -1,0 +1,12 @@
+NVIDIA Corporation (NVDA) — Q3 FY2026 Earnings Summary (synthetic data for demo)
+
+NVIDIA reported record third-quarter fiscal 2026 revenue of $51.2 billion, up 68% year over
+year, driven overwhelmingly by Data Center revenue of $43.7 billion. Demand for the new
+Blackwell-generation GPUs continued to outpace supply, with management noting that supply
+constraints are expected to ease in the second half of fiscal 2027.
+
+Gross margin was 74.1%. The Gaming segment contributed $3.6 billion, up 12% year over year.
+Management guided Q4 revenue to approximately $54 billion, plus or minus 2%.
+
+NVIDIA highlighted growing demand from sovereign AI initiatives and enterprise customers
+building inference infrastructure, which it expects to be a multi-year growth driver.
