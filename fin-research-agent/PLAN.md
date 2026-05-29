@@ -97,9 +97,9 @@ RAG indexing sub-flow (one-time, `search_docs` setup):
       Go module + `config/` `.env` loader; `internal/llm/gemini.go` (CLI wrapper, `--skip-trust` for headless,
       stdin for large prompts, JSON token/latency parse); `internal/trace` tracer (trace-first); `main.go`;
       gitleaks pre-commit hook via `core.hooksPath .githooks/`; `.gitignore` for Go/db.
-      *Verified:* real CLI call (in=7644 out=66, 1530ms); hook blocks a planted secret; `.env` untracked.
-      *Empirical:* CLI injects **~7.5K scaffolding tokens/call** (one-sentence Q → 7644 input tokens).
-      *Gotchas fixed:* CLI token field is `prompt` not `input`; needs `--skip-trust` to run headless.
+      *Verified:* real CLI call (in=5659 out=31, 1910ms); gitleaks hook blocks a format-valid GitHub PAT; `.env` untracked.
+      *Empirical:* CLI injects **~5.7K scaffolding tokens/call** (one-sentence Q → 5659 input tokens) — confirms the "CLI pollutes token measurement" caveat.
+      *Gotchas fixed:* CLI needs `--skip-trust` to run headless; hook uses `gitleaks git --staged` (documented pre-commit cmd; `protect` is undocumented in 8.30.1). Token field is `input` (parses fine).
 - [ ] **M2 — Data layer + SQL tool.**
       `data/seed.go` builds the SQLite DB (`financials`, `prices`; 3 tickers × 8 quarters);
       `db/sqlite.go` read-only conn + SELECT-only guard; `db/schema.go` schema-as-text;
