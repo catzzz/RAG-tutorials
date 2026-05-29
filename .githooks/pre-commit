@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Repo pre-commit hook: block secrets before they ever land in a (public) commit.
+# Activated for everyone via:  git config core.hooksPath .githooks
+# Requires gitleaks:  brew install gitleaks
+set -euo pipefail
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "⚠️  gitleaks not installed — skipping secret scan. Install it: brew install gitleaks" >&2
+  exit 0
+fi
+
+# Scan only what's staged for this commit.
+if ! gitleaks protect --staged --redact -v; then
+  echo "❌ gitleaks found a potential secret in your staged changes. Commit aborted." >&2
+  echo "   Remove the secret (or add a false-positive allow rule) and try again." >&2
+  exit 1
+fi
