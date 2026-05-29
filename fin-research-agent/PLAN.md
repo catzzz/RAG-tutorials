@@ -93,10 +93,13 @@ RAG indexing sub-flow (one-time, `search_docs` setup):
 
 ## Milestone plan (Go — build step-by-step)
 
-- [ ] **M1 — Scaffold + safety + LLM backend.**
-      `go mod init`; `.gitignore` (`.env`, `traces/`, `*.db`, `bin/`); **gitleaks pre-commit hook**;
-      `.env` + `config/` loader; copy & trim `gemini.go` → `internal/llm/gemini.go` (smoke-test one call);
-      wire the **tracer** from the first commit; `main.go` skeleton.
+- [x] **M1 — Scaffold + safety + LLM backend.** ✅ commit `9f3c30e`
+      Go module + `config/` `.env` loader; `internal/llm/gemini.go` (CLI wrapper, `--skip-trust` for headless,
+      stdin for large prompts, JSON token/latency parse); `internal/trace` tracer (trace-first); `main.go`;
+      gitleaks pre-commit hook via `core.hooksPath .githooks/`; `.gitignore` for Go/db.
+      *Verified:* real CLI call (in=7644 out=66, 1530ms); hook blocks a planted secret; `.env` untracked.
+      *Empirical:* CLI injects **~7.5K scaffolding tokens/call** (one-sentence Q → 7644 input tokens).
+      *Gotchas fixed:* CLI token field is `prompt` not `input`; needs `--skip-trust` to run headless.
 - [ ] **M2 — Data layer + SQL tool.**
       `data/seed.go` builds the SQLite DB (`financials`, `prices`; 3 tickers × 8 quarters);
       `db/sqlite.go` read-only conn + SELECT-only guard; `db/schema.go` schema-as-text;
